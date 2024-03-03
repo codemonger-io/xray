@@ -1,0 +1,38 @@
+name: Lint and build
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  rustfmt:
+    name: rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - name: Install Rust toolchain (rustfmt)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: Check format
+        run: cargo fmt --all -- --check
+
+  test:
+    name: Build and test
+    strategy:
+      matrix:
+        os: ubuntu-latest
+        toolchain: [stable, nightly]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - name: Install Rust toolchain ${{ matrix.toolchain }}
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ matrix.toolchain }}
+      - name: Run tests
+        run: cargo test --locked --release -vv
