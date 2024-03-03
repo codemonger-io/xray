@@ -35,4 +35,4 @@ jobs:
         with:
           toolchain: ${{ matrix.toolchain }}
       - name: Run tests
-        run: cargo test --locked --release -vv
+        run: cargo test --release -vv
