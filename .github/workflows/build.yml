@@ -24,7 +24,7 @@ jobs:
     name: Build and test
     strategy:
       matrix:
-        os: ubuntu-latest
+        os: [ubuntu-latest]
         toolchain: [stable, nightly]
     runs-on: ${{ matrix.os }}
     steps:
