@@ -114,10 +114,9 @@ impl FromStr for Header {
                 } else if line.starts_with("Sampled=") {
                     header.sampling_decision = line.into();
                 } else if !line.starts_with("Self=") {
-                    let pos = line
-                        .find('=')
+                    let (key, value) = line
+                        .split_once('=')
                         .ok_or_else(|| format!("invalid key=value: no `=` found in `{}`", s))?;
-                    let (key, value) = (&line[..pos], &line[pos + 1..]);
                     header.additional_data.insert(key.into(), value.into());
                 }
                 Ok(header)
