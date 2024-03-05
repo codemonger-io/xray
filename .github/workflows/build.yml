@@ -20,6 +20,20 @@ jobs:
       - name: Check format
         run: cargo fmt --all -- --check
 
+  clippy:
+    name: clippy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v4
+      - name: Install Rust toolchain (clippy)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - name: Check clippy
+        run: cargo clippy --lib --bins --tests --examples -- -D warnings
+        # "--benches" are excluded as they require nightly Rust
+
   test:
     name: Build and test
     strategy:
