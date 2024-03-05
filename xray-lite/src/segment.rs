@@ -93,8 +93,6 @@ pub struct Aws {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub elastic_beanstalk: Option<ElasticBeanstalk>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tracing: Option<Tracing>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub xray: Option<XRay>,
 }
 
@@ -132,12 +130,6 @@ pub struct ElasticBeanstalk {
     /// number indicating the ID of the last successful deployment to the instance that served the request.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub deployment_id: Option<usize>,
-}
-
-#[derive(Debug, Default, Serialize)]
-pub struct Tracing {
-    /// version of sdk
-    pub sdk: Option<String>,
 }
 
 impl Default for Annotation {
