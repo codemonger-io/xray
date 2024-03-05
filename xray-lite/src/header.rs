@@ -8,7 +8,7 @@ use std::{
     str::FromStr,
 };
 
-#[derive(PartialEq, Clone, Copy, Debug)]
+#[derive(PartialEq, Clone, Copy, Debug, Default)]
 pub enum SamplingDecision {
     /// Sampled indicates the current segment has been
     /// sampled and will be sent to the X-Ray daemon.
@@ -21,6 +21,7 @@ pub enum SamplingDecision {
     /// back upstream in the response.
     Requested,
     /// Unknown indicates no sampling decision will be made.
+    #[default]
     Unknown,
 }
 
@@ -48,12 +49,6 @@ impl Display for SamplingDecision {
             }
         )?;
         Ok(())
-    }
-}
-
-impl Default for SamplingDecision {
-    fn default() -> Self {
-        SamplingDecision::Unknown
     }
 }
 
@@ -112,10 +107,10 @@ impl FromStr for Header {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         s.split(';')
             .try_fold(Header::default(), |mut header, line| {
-                if line.starts_with("Root=") {
-                    header.trace_id = TraceId::Rendered(line[5..].into())
-                } else if line.starts_with("Parent=") {
-                    header.parent_id = Some(SegmentId::Rendered(line[7..].into()))
+                if let Some(trace_id) = line.strip_prefix("Root=") {
+                    header.trace_id = TraceId::Rendered(trace_id.into())
+                } else if let Some(parent_id) = line.strip_prefix("Parent=") {
+                    header.parent_id = Some(SegmentId::Rendered(parent_id.into()))
                 } else if line.starts_with("Sampled=") {
                     header.sampling_decision = line.into();
                 } else if !line.starts_with("Self=") {

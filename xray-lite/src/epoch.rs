@@ -40,10 +40,9 @@ impl From<Duration> for Seconds {
     }
 }
 
-impl Into<Duration> for Seconds {
-    fn into(self) -> Duration {
-        let Seconds(secs) = self;
-        Duration::new(secs.trunc() as u64, (secs.fract() * 1.0e9) as u32)
+impl From<Seconds> for Duration {
+    fn from(s: Seconds) -> Self {
+        Duration::new(s.0.trunc() as u64, (s.0.fract() * 1.0e9) as u32)
     }
 }
 

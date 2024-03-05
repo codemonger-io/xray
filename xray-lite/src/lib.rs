@@ -146,7 +146,7 @@ impl Client {
     pub fn new(addr: SocketAddr) -> Result<Self> {
         let socket = Arc::new(UdpSocket::bind(&[([0, 0, 0, 0], 0).into()][..])?);
         socket.set_nonblocking(true)?;
-        socket.connect(&addr)?;
+        socket.connect(addr)?;
         Ok(Client { socket })
     }
 
@@ -159,7 +159,7 @@ impl Client {
     /// for more details.
     pub fn from_lambda_env() -> Result<Self> {
         let addr: SocketAddr = env::var("AWS_XRAY_DAEMON_ADDRESS")
-            .map_err(|_| Error::MissingEnvVar(&"AWS_XRAY_DAEMON_ADDRESS"))?
+            .map_err(|_| Error::MissingEnvVar("AWS_XRAY_DAEMON_ADDRESS"))?
             .parse::<SocketAddr>()
             .map_err(|e| Error::BadConfig(format!("invalid X-Ray daemon address: {e}")))?;
         Client::new(addr)

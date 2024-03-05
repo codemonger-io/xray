@@ -92,15 +92,19 @@ pub struct Aws {
     /// Information about an Elastic Beanstalk environment. You can find this information in a file named /var/elasticbeanstalk/xray/environment.conf on the latest Elastic Beanstalk platforms.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub elastic_beanstalk: Option<ElasticBeanstalk>,
+    /// Metadata about the type and version of instrumentation used.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub xray: Option<XRay>,
 }
 
+/// Metadata about the type and version of instrumentation used.
 #[derive(Debug, Default, Serialize)]
 pub struct XRay {
+    /// The version of SDK or agent being used.
     pub sdk_version: Option<String>,
 }
 
+/// Information about an Amazon ECS container.
 #[derive(Debug, Default, Serialize)]
 pub struct Ecs {
     /// The container ID of the container running your application.
@@ -108,6 +112,7 @@ pub struct Ecs {
     pub container: Option<String>,
 }
 
+/// Information about an EC2 instance.
 #[derive(Debug, Default, Serialize)]
 pub struct Ec2 {
     /// The instance ID of the EC2 instance.
