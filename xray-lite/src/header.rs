@@ -169,6 +169,22 @@ mod tests {
             })
         )
     }
+    #[test]
+    fn parse_with_additional_data_from_str() {
+        assert_eq!(
+            "Root=1-5759e988-bd862e3fe1be46a994272793;Parent=53995c3f42cd8ad8;Sampled=1;Lineage=01234567:0;Unknown=unknown"
+                .parse::<Header>(),
+            Ok(Header {
+                trace_id: TraceId::Rendered("1-5759e988-bd862e3fe1be46a994272793".into()),
+                parent_id: Some(SegmentId::Rendered("53995c3f42cd8ad8".into())),
+                sampling_decision: SamplingDecision::Sampled,
+                additional_data: vec![
+                    ("Lineage".into(), "01234567:0".into()),
+                    ("Unknown".into(), "unknown".into()),
+                ].into_iter().collect()
+            })
+        )
+    }
 
     #[test]
     fn displays_as_header() {
