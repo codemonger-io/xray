@@ -110,7 +110,6 @@ use serde::Serialize;
 use std::{
     env,
     net::{SocketAddr, UdpSocket},
-    result::Result as StdResult,
     sync::Arc,
 };
 
@@ -124,12 +123,13 @@ mod segment_id;
 mod trace_id;
 
 pub use crate::{
-    epoch::Seconds, error::Error, header::Header, segment::*, segment_id::SegmentId,
+    epoch::Seconds,
+    error::{Error, Result},
+    header::Header,
+    segment::*,
+    segment_id::SegmentId,
     trace_id::TraceId,
 };
-
-/// Type alias for Results which may return `xray::Errors`
-pub type Result<T> = StdResult<T, Error>;
 
 /// X-Ray daemon client interface
 #[derive(Clone, Debug)]

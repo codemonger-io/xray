@@ -18,3 +18,6 @@ pub enum Error {
     #[error("bad configuration: {0}")]
     BadConfig(String),
 }
+
+/// Type alias for Results which may return [`Error`].
+pub type Result<T> = std::result::Result<T, Error>;
