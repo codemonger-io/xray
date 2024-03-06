@@ -8,7 +8,7 @@ Add the following to your `Cargo.toml` file:
 
 ```toml
 [dependencies]
-xray-lite = { git = "https://github.com/codemonger-io/xray-lite.git", tag = "v0.0.3" }
+xray-lite = { git = "https://github.com/codemonger-io/xray-lite.git", tag = "v0.0.4" }
 ```
 
 ## Usage
