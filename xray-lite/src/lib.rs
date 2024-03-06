@@ -106,13 +106,7 @@
 //! }
 //! ```
 
-use serde::Serialize;
-use std::{
-    env,
-    net::{SocketAddr, UdpSocket},
-    sync::Arc,
-};
-
+mod client;
 mod epoch;
 mod error;
 mod header;
@@ -123,6 +117,7 @@ mod segment_id;
 mod trace_id;
 
 pub use crate::{
+    client::Client,
     epoch::Seconds,
     error::{Error, Result},
     header::Header,
@@ -130,59 +125,6 @@ pub use crate::{
     segment_id::SegmentId,
     trace_id::TraceId,
 };
-
-/// X-Ray daemon client interface
-#[derive(Clone, Debug)]
-pub struct Client {
-    socket: Arc<UdpSocket>,
-}
-
-impl Client {
-    const HEADER: &'static [u8] = br#"{"format": "json", "version": 1}"#;
-    const DELIMITER: &'static [u8] = &[b'\n'];
-
-    /// Return a new X-Ray client connected
-    /// to the provided `addr`
-    pub fn new(addr: SocketAddr) -> Result<Self> {
-        let socket = Arc::new(UdpSocket::bind(&[([0, 0, 0, 0], 0).into()][..])?);
-        socket.set_nonblocking(true)?;
-        socket.connect(addr)?;
-        Ok(Client { socket })
-    }
-
-    /// Creates a new X-Ray client from the Lambda environment variable.
-    ///
-    /// The following environment variable must be set:
-    /// - `AWS_XRAY_DAEMON_ADDRESS`: X-Ray daemon address
-    ///
-    /// Please refer to the [AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-runtime)
-    /// for more details.
-    pub fn from_lambda_env() -> Result<Self> {
-        let addr: SocketAddr = env::var("AWS_XRAY_DAEMON_ADDRESS")
-            .map_err(|_| Error::MissingEnvVar("AWS_XRAY_DAEMON_ADDRESS"))?
-            .parse::<SocketAddr>()
-            .map_err(|e| Error::BadConfig(format!("invalid X-Ray daemon address: {e}")))?;
-        Client::new(addr)
-    }
-
-    #[inline]
-    fn packet<S>(data: S) -> Result<Vec<u8>>
-    where
-        S: Serialize,
-    {
-        let bytes = serde_json::to_vec(&data)?;
-        Ok([Self::HEADER, Self::DELIMITER, &bytes].concat())
-    }
-
-    /// send a segment to the xray daemon this client is connected to
-    pub fn send<S>(&self, data: &S) -> Result<()>
-    where
-        S: Serialize,
-    {
-        self.socket.send(&Self::packet(data)?)?;
-        Ok(())
-    }
-}
 
 /// Context.
 pub trait Context {
@@ -467,24 +409,4 @@ impl Namespace for CustomNamespace {
 
     // does nothing
     fn update_subsegment(&self, _subsegment: &mut Subsegment) {}
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[test]
-    fn client_prefixes_packets_with_header() {
-        assert_eq!(
-            Client::packet(serde_json::json!({
-                "foo": "bar"
-            }))
-            .unwrap(),
-            [
-                br#"{"format": "json", "version": 1}"# as &[u8],
-                &[b'\n'],
-                br#"{"foo":"bar"}"#,
-            ]
-            .concat()
-        )
-    }
 }
