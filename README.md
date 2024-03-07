@@ -106,6 +106,10 @@ fn do_something(context: &impl Context) {
 }
 ```
 
+## API Documentation
+
+<https://codemonger-io.github.io/xray-lite/api/xray_lite/>
+
 ## Acknowledgements
 
 This project is built on top of the [great work](https://github.com/softprops/xray) of [Doug Tangren (softprops)](https://github.com/softprops).
