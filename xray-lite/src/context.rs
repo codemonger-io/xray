@@ -46,7 +46,8 @@ impl SubsegmentContext {
     /// Updates the context with a given name prefix.
     ///
     /// The name prefix is prepended to the name of every custom subsegment.
-    /// Only subsegments associated with [`CustomNamespace`] are affected.
+    /// Only subsegments associated with
+    /// [`CustomNamespace`][crate::namespace::CustomNamespace] are affected.
     pub fn with_name_prefix(self, prefix: impl Into<String>) -> Self {
         Self {
             client: self.client,

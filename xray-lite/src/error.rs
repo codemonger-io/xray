@@ -1,9 +1,8 @@
 use serde_json::Error as JsonError;
 use std::io::Error as IOError;
-use thiserror::Error;
 
 /// Common error type.
-#[derive(Error, Debug)]
+#[derive(thiserror::Error, Debug)]
 pub enum Error {
     /// Missing environment variable.
     #[error("missing environment variable: {0}")]
