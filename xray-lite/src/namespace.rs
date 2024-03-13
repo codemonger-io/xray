@@ -230,9 +230,12 @@ mod tests {
         namespace.update_subsegment(&mut subsegment);
         assert_eq!(
             subsegment
-                .http.expect("http")
-                .response.expect("response")
-                .status.expect("status"),
+                .http
+                .expect("http")
+                .response
+                .expect("response")
+                .status
+                .expect("status"),
             200,
         );
     }
@@ -263,9 +266,12 @@ mod tests {
         namespace.update_subsegment(&mut subsegment);
         assert_eq!(
             subsegment
-                .http.expect("http")
-                .response.expect("response")
-                .status.expect("status"),
+                .http
+                .expect("http")
+                .response
+                .expect("response")
+                .status
+                .expect("status"),
             200,
         );
     }
