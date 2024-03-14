@@ -6,6 +6,7 @@ use crate::namespace::Namespace;
 use crate::segment::Subsegment;
 
 /// Subsegment session.
+#[derive(Debug)]
 pub enum SubsegmentSession<T>
 where
     T: Namespace + Send + Sync,
