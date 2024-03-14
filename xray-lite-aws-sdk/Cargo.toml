@@ -19,3 +19,7 @@ aws-smithy-runtime-api = { version = "1.1.7", features = ["client"] }
 aws-smithy-types = "1.1.7"
 aws-types = "1.1.7"
 xray-lite = { path = "../xray-lite" }
+
+[dev-dependencies]
+aws-config = "1.1.8"
+aws-sdk-s3 = "1.18.0"
