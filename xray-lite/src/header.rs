@@ -53,7 +53,7 @@ impl Display for SamplingDecision {
 }
 
 /// Parsed representation of `X-Amzn-Trace-Id` request header
-#[derive(PartialEq, Debug, Default)]
+#[derive(PartialEq, Clone, Debug, Default)]
 pub struct Header {
     pub(crate) trace_id: TraceId,
     pub(crate) parent_id: Option<SegmentId>,

@@ -19,7 +19,7 @@ pub trait Context {
 }
 
 /// Context as a subsegment of an existing segment.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SubsegmentContext {
     client: Client,
     header: Header,
