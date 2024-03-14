@@ -41,10 +41,7 @@ pub trait ContextExt: Context + Clone + std::fmt::Debug + Send + Sync + 'static 
     }
 }
 
-impl<T> ContextExt for T
-where
-    T: Context + Clone + std::fmt::Debug + Send + Sync + 'static,
-{}
+impl<T> ContextExt for T where T: Context + Clone + std::fmt::Debug + Send + Sync + 'static {}
 
 #[derive(Debug)]
 struct XrayIntercept<T>
