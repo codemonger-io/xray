@@ -1,4 +1,5 @@
 [workspace]
 members = [
   "xray-lite",
+  "xray-lite-aws-sdk",
 ]
