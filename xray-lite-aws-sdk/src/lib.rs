@@ -102,17 +102,18 @@ where
         _runtime_components: &RuntimeComponents,
         _cfg: &mut ConfigBag,
     ) -> Result<(), BoxError> {
-        self.session
+        let trace_id = self
+            .session
             .lock()
             .unwrap()
             .as_ref()
-            .and_then(|s| s.x_amzn_trace_id())
-            .map(|trace_id| {
-                context
-                    .request_mut()
-                    .headers_mut()
-                    .insert(Header::NAME, trace_id);
-            });
+            .and_then(|s| s.x_amzn_trace_id());
+        if let Some(trace_id) = trace_id {
+            context
+                .request_mut()
+                .headers_mut()
+                .insert(Header::NAME, trace_id);
+        }
         Ok(())
     }
 
