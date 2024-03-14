@@ -2,18 +2,20 @@
 
 > [AWS X-Ray](https://aws.amazon.com/xray/) daemon client for Rust applications on [AWS Lambda](https://aws.amazon.com/lambda/)
 
-## Installing
+## Installing `xray-lite`
 
 Add the following to your `Cargo.toml` file:
 
 ```toml
 [dependencies]
-xray-lite = { git = "https://github.com/codemonger-io/xray-lite.git", tag = "v0.0.6" }
+xray-lite = { git = "https://github.com/codemonger-io/xray-lite.git", tag = "v0.0.7" }
 ```
 
 ## Usage
 
 ### Subsegment of AWS service operation
+
+**The [`xray-lite-aws-sdk`](./xray-lite-aws-sdk) extension is recommended for tracing requests through [AWS SDK for Rust](https://aws.amazon.com/sdk-for-rust/).**
 
 Here is an example to record a subsegment of an AWS service operation within a Lambda function invocation instrumented with AWS X-Ray:
 
@@ -106,9 +108,14 @@ fn do_something(context: &impl Context) {
 }
 ```
 
+## Extensions
+
+- [`xray-lite-aws-sdk`](./xray-lite-aws-sdk/): extension for [AWS SDK for Rust](https://aws.amazon.com/sdk-for-rust/)
+
 ## API Documentation
 
-<https://codemonger-io.github.io/xray-lite/api/xray_lite/>
+- [`xray-lite`](https://codemonger-io.github.io/xray-lite/api/xray_lite/)
+- [`xray-lite-aws-sdk`](https://codemonger-io.github.io/xray-lite/api/xray_lite_aws_sdk/)
 
 ## Acknowledgements
 
