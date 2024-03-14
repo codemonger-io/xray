@@ -1,1 +1,1 @@
-window.ALL_CRATES = ["xray_lite"];
+window.ALL_CRATES = ["xray_lite","xray_lite_aws_sdk"];

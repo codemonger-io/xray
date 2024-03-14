@@ -291,7 +291,7 @@
 }
 
 <span class="doccomment">/// Parsed representation of `X-Amzn-Trace-Id` request header
-</span><span class="attr">#[derive(PartialEq, Debug, Default)]
+</span><span class="attr">#[derive(PartialEq, Clone, Debug, Default)]
 </span><span class="kw">pub struct </span>Header {
     <span class="kw">pub</span>(<span class="kw">crate</span>) trace_id: TraceId,
     <span class="kw">pub</span>(<span class="kw">crate</span>) parent_id: <span class="prelude-ty">Option</span>&lt;SegmentId&gt;,
