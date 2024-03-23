@@ -134,12 +134,32 @@ where
     }
 }
 
-/// Converts into [`InfallibleContext`].
+/// Conversion into an infallible context.
+///
+/// You can convert `Result<Context, _>` into an infallible context by using
+/// this trait.`
+///
+/// ```
+/// use xray_lite::{
+///     Client,
+///     Context as _,
+///     IntoInfallibleContext as _,
+///     CustomNamespace,
+///     SubsegmentContext,
+/// };
+///
+/// fn main() {
+///     # std::env::set_var("AWS_XRAY_DAEMON_ADDRESS", "127.0.0.1:2000");
+///     let client = Client::from_lambda_env().unwrap();
+///     let context = SubsegmentContext::from_lambda_env(client).into_infallible();
+///     let _session = context.enter_subsegment(CustomNamespace::new("readme.example"));
+/// }
+/// ```
 pub trait IntoInfallibleContext {
     /// Underlying context type.
     type Context: Context;
 
-    /// Converts into [`InfallibleContext`].
+    /// Converts into an infallible context.
     fn into_infallible(self) -> InfallibleContext<Self::Context>;
 }
 
