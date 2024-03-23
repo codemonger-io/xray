@@ -70,3 +70,86 @@ impl Context for SubsegmentContext {
         )
     }
 }
+
+/// Infallible context.
+///
+/// This context is useful if you want to fall back to "no-op" when creation of
+/// the underlying context fails.
+pub enum InfallibleContext<T> {
+    /// Operational context.
+    Op(T),
+    /// Non-operational context.
+    Noop,
+}
+
+impl<T> InfallibleContext<T>
+where
+    T: Context,
+{
+    /// Constructs from a result of the underlying context creation.
+    pub fn new<E>(result: std::result::Result<T, E>) -> Self {
+        match result {
+            Ok(context) => Self::Op(context),
+            Err(_) => Self::Noop,
+        }
+    }
+}
+
+impl<T> Context for InfallibleContext<T>
+where
+    T: Context,
+{
+    fn enter_subsegment<U>(&self, namespace: U) -> SubsegmentSession<U>
+    where
+        U: Namespace + Send + Sync,
+    {
+        match self {
+            Self::Op(context) => context.enter_subsegment(namespace),
+            Self::Noop => SubsegmentSession::failed(),
+        }
+    }
+}
+
+impl<T> Clone for InfallibleContext<T>
+where
+    T: Clone,
+{
+    fn clone(&self) -> Self {
+        match self {
+            Self::Op(context) => Self::Op(context.clone()),
+            Self::Noop => Self::Noop,
+        }
+    }
+}
+
+impl<T> std::fmt::Debug for InfallibleContext<T>
+where
+    T: std::fmt::Debug,
+{
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Op(context) => write!(f, "InfallibleContext::Op({:?})", context),
+            Self::Noop => write!(f, "InfallibleContext::Noop"),
+        }
+    }
+}
+
+/// Converts into [`InfallibleContext`].
+pub trait IntoInfallibleContext {
+    /// Underlying context type.
+    type Context: Context;
+
+    /// Converts into [`InfallibleContext`].
+    fn into_infallible(self) -> InfallibleContext<Self::Context>;
+}
+
+impl<T, E> IntoInfallibleContext for std::result::Result<T, E>
+where
+    T: Context,
+{
+    type Context = T;
+
+    fn into_infallible(self) -> InfallibleContext<Self::Context> {
+        InfallibleContext::new(self)
+    }
+}

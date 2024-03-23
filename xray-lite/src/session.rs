@@ -48,6 +48,10 @@ where
         }
     }
 
+    pub(crate) fn failed() -> Self {
+        Self::Failed
+    }
+
     /// Returns the `x-amzn-trace-id` header value.
     pub fn x_amzn_trace_id(&self) -> Option<String> {
         match self {

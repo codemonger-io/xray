@@ -121,7 +121,7 @@ mod trace_id;
 
 pub use crate::{
     client::Client,
-    context::{Context, SubsegmentContext},
+    context::{Context, IntoInfallibleContext, SubsegmentContext},
     epoch::Seconds,
     error::{Error, Result},
     header::Header,
