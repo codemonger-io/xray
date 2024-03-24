@@ -9,24 +9,27 @@ use crate::session::SubsegmentSession;
 
 /// Context.
 pub trait Context {
+    /// Client type.
+    type Client: Client;
+
     /// Enters in a new subsegment.
     ///
     /// [`SubsegmentSession`] records the end of the subsegment when it is
     /// dropped.
-    fn enter_subsegment<T>(&self, namespace: T) -> SubsegmentSession<T>
+    fn enter_subsegment<T>(&self, namespace: T) -> SubsegmentSession<Self::Client, T>
     where
         T: Namespace + Send + Sync;
 }
 
 /// Context as a subsegment of an existing segment.
 #[derive(Clone, Debug)]
-pub struct SubsegmentContext {
-    client: Client,
+pub struct SubsegmentContext<C> {
+    client: C,
     header: Header,
     name_prefix: String,
 }
 
-impl SubsegmentContext {
+impl<C> SubsegmentContext<C> {
     /// Creates a new context from the Lambda environment variable.
     ///
     /// The following environment variable must be set:
@@ -34,7 +37,7 @@ impl SubsegmentContext {
     ///
     /// Please refer to the [AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-runtime)
     /// for more details.
-    pub fn from_lambda_env(client: Client) -> Result<Self> {
+    pub fn from_lambda_env(client: C) -> Result<Self> {
         let header = lambda::header()?;
         Ok(Self {
             client,
@@ -57,8 +60,13 @@ impl SubsegmentContext {
     }
 }
 
-impl Context for SubsegmentContext {
-    fn enter_subsegment<T>(&self, namespace: T) -> SubsegmentSession<T>
+impl<C> Context for SubsegmentContext<C>
+where
+    C: Client,
+{
+    type Client = C;
+
+    fn enter_subsegment<T>(&self, namespace: T) -> SubsegmentSession<Self::Client, T>
     where
         T: Namespace + Send + Sync,
     {
@@ -99,7 +107,9 @@ impl<T> Context for InfallibleContext<T>
 where
     T: Context,
 {
-    fn enter_subsegment<U>(&self, namespace: U) -> SubsegmentSession<U>
+    type Client = T::Client;
+
+    fn enter_subsegment<U>(&self, namespace: U) -> SubsegmentSession<Self::Client, U>
     where
         U: Namespace + Send + Sync,
     {
@@ -141,8 +151,8 @@ where
 ///
 /// ```
 /// use xray_lite::{
-///     Client,
 ///     Context as _,
+///     DaemonClient,
 ///     IntoInfallibleContext as _,
 ///     CustomNamespace,
 ///     SubsegmentContext,
@@ -150,7 +160,7 @@ where
 ///
 /// fn main() {
 ///     # std::env::set_var("AWS_XRAY_DAEMON_ADDRESS", "127.0.0.1:2000");
-///     let client = Client::from_lambda_env().unwrap();
+///     let client = DaemonClient::from_lambda_env().unwrap();
 ///     let context = SubsegmentContext::from_lambda_env(client).into_infallible();
 ///     let _session = context.enter_subsegment(CustomNamespace::new("readme.example"));
 /// }

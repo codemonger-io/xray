@@ -10,12 +10,12 @@
 //! within a Lambda function invocation instrumented with AWS X-Ray:
 //!
 //! ```
-//! use xray_lite::{AwsNamespace, Client, Context, SubsegmentContext};
+//! use xray_lite::{AwsNamespace, Context, DaemonClient, SubsegmentContext};
 //!
 //! fn main() {
 //!    // reads AWS_XRAY_DAEMON_ADDRESS
 //!    # std::env::set_var("AWS_XRAY_DAEMON_ADDRESS", "127.0.0.1:2000");
-//!    let client = Client::from_lambda_env().unwrap();
+//!    let client = DaemonClient::from_lambda_env().unwrap();
 //!    // reads _X_AMZN_TRACE_ID
 //!    # std::env::set_var("_X_AMZN_TRACE_ID", "Root=1-65dfb5a1-0123456789abcdef01234567;Parent=0123456789abcdef;Sampled=1");
 //!    let context = SubsegmentContext::from_lambda_env(client).unwrap();
@@ -48,12 +48,12 @@
 //! Lambda function invocation intstrumented with AWS X-Ray:
 //!
 //! ```
-//! use xray_lite::{Client, Context, RemoteNamespace, SubsegmentContext};
+//! use xray_lite::{Context, DaemonClient, RemoteNamespace, SubsegmentContext};
 //!
 //! fn main() {
 //!    // reads AWS_XRAY_DAEMON_ADDRESS
 //!    # std::env::set_var("AWS_XRAY_DAEMON_ADDRESS", "127.0.0.1:2000");
-//!    let client = Client::from_lambda_env().unwrap();
+//!    let client = DaemonClient::from_lambda_env().unwrap();
 //!    // reads _X_AMZN_TRACE_ID
 //!    # std::env::set_var("_X_AMZN_TRACE_ID", "Root=1-65dfb5a1-0123456789abcdef01234567;Parent=0123456789abcdef;Sampled=1");
 //!    let context = SubsegmentContext::from_lambda_env(client).unwrap();
@@ -82,12 +82,12 @@
 //! invocation intstrumented with AWS X-Ray:
 //!
 //! ```
-//! use xray_lite::{Client, Context, CustomNamespace, SubsegmentContext};
+//! use xray_lite::{Context, DaemonClient, CustomNamespace, SubsegmentContext};
 //!
 //! fn main() {
 //!    // reads AWS_XRAY_DAEMON_ADDRESS
 //!    # std::env::set_var("AWS_XRAY_DAEMON_ADDRESS", "127.0.0.1:2000");
-//!    let client = Client::from_lambda_env().unwrap();
+//!    let client = DaemonClient::from_lambda_env().unwrap();
 //!    // reads _X_AMZN_TRACE_ID
 //!    # std::env::set_var("_X_AMZN_TRACE_ID", "Root=1-65dfb5a1-0123456789abcdef01234567;Parent=0123456789abcdef;Sampled=1");
 //!    let context = SubsegmentContext::from_lambda_env(client).unwrap()
@@ -120,7 +120,7 @@ mod session;
 mod trace_id;
 
 pub use crate::{
-    client::Client,
+    client::{Client, DaemonClient},
     context::{Context, IntoInfallibleContext, SubsegmentContext},
     epoch::Seconds,
     error::{Error, Result},

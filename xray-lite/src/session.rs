@@ -7,14 +7,15 @@ use crate::segment::Subsegment;
 
 /// Subsegment session.
 #[derive(Debug)]
-pub enum SubsegmentSession<T>
+pub enum SubsegmentSession<C, T>
 where
+    C: Client,
     T: Namespace + Send + Sync,
 {
     /// Entered subsegment.
     Entered {
         /// X-Ray client.
-        client: Client,
+        client: C,
         /// X-Amzn-Trace-Id header.
         header: Header,
         /// Subsegment.
@@ -26,11 +27,12 @@ where
     Failed,
 }
 
-impl<T> SubsegmentSession<T>
+impl<C, T> SubsegmentSession<C, T>
 where
+    C: Client,
     T: Namespace + Send + Sync,
 {
-    pub(crate) fn new(client: Client, header: &Header, namespace: T, name_prefix: &str) -> Self {
+    pub(crate) fn new(client: C, header: &Header, namespace: T, name_prefix: &str) -> Self {
         let mut subsegment = Subsegment::begin(
             header.trace_id.clone(),
             header.parent_id.clone(),
@@ -69,8 +71,9 @@ where
     }
 }
 
-impl<T> Drop for SubsegmentSession<T>
+impl<C, T> Drop for SubsegmentSession<C, T>
 where
+    C: Client,
     T: Namespace + Send + Sync,
 {
     fn drop(&mut self) {

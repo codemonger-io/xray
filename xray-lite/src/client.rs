@@ -8,13 +8,21 @@ use serde::Serialize;
 
 use crate::error::{Error, Result};
 
-/// X-Ray daemon client interface
+/// X-Ray client interface.
+pub trait Client: Clone + std::fmt::Debug + Send + Sync {
+    /// Sends a segment to the xray daemon this client is connected to.
+    fn send<S>(&self, data: &S) -> Result<()>
+    where
+        S: Serialize;
+}
+
+/// X-Ray daemon client.
 #[derive(Clone, Debug)]
-pub struct Client {
+pub struct DaemonClient {
     socket: Arc<UdpSocket>,
 }
 
-impl Client {
+impl DaemonClient {
     const HEADER: &'static [u8] = br#"{"format": "json", "version": 1}"#;
     const DELIMITER: &'static [u8] = &[b'\n'];
 
@@ -24,7 +32,7 @@ impl Client {
         let socket = Arc::new(UdpSocket::bind(&[([0, 0, 0, 0], 0).into()][..])?);
         socket.set_nonblocking(true)?;
         socket.connect(addr)?;
-        Ok(Client { socket })
+        Ok(DaemonClient { socket })
     }
 
     /// Creates a new X-Ray client from the Lambda environment variable.
@@ -39,7 +47,7 @@ impl Client {
             .map_err(|_| Error::MissingEnvVar("AWS_XRAY_DAEMON_ADDRESS"))?
             .parse::<SocketAddr>()
             .map_err(|e| Error::BadConfig(format!("invalid X-Ray daemon address: {e}")))?;
-        Client::new(addr)
+        DaemonClient::new(addr)
     }
 
     #[inline]
@@ -50,9 +58,10 @@ impl Client {
         let bytes = serde_json::to_vec(&data)?;
         Ok([Self::HEADER, Self::DELIMITER, &bytes].concat())
     }
+}
 
-    /// send a segment to the xray daemon this client is connected to
-    pub fn send<S>(&self, data: &S) -> Result<()>
+impl Client for DaemonClient {
+    fn send<S>(&self, data: &S) -> Result<()>
     where
         S: Serialize,
     {
@@ -67,7 +76,7 @@ mod tests {
     #[test]
     fn client_prefixes_packets_with_header() {
         assert_eq!(
-            Client::packet(serde_json::json!({
+            DaemonClient::packet(serde_json::json!({
                 "foo": "bar"
             }))
             .unwrap(),

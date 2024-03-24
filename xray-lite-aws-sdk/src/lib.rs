@@ -14,11 +14,11 @@
 //! the S3 GetObject operation:
 //! ```no_run
 //! use aws_config::BehaviorVersion;
-//! use xray_lite::{Client, SubsegmentContext};
+//! use xray_lite::{DaemonClient, SubsegmentContext};
 //! use xray_lite_aws_sdk::ContextExt as _;
 //!
 //! async fn get_object_from_s3() {
-//!     let xray_client = Client::from_lambda_env().unwrap();
+//!     let xray_client = DaemonClient::from_lambda_env().unwrap();
 //!     let xray_context = SubsegmentContext::from_lambda_env(xray_client).unwrap();
 //!
 //!     let config = aws_config::load_defaults(BehaviorVersion::latest()).await;
@@ -86,7 +86,7 @@ where
     operation: String,
     // session is unnecessarily wrapped in Mutex because `Intercept` is
     // immutable during its method calls.
-    session: Arc<Mutex<Option<SubsegmentSession<AwsNamespace>>>>,
+    session: Arc<Mutex<Option<SubsegmentSession<T::Client, AwsNamespace>>>>,
 }
 
 impl<T> XrayIntercept<T>
