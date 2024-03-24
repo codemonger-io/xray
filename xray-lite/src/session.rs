@@ -7,10 +7,10 @@ use crate::segment::Subsegment;
 
 /// Subsegment session.
 #[derive(Debug)]
-pub enum SubsegmentSession<C, T>
+pub enum SubsegmentSession<C, N>
 where
     C: Client,
-    T: Namespace + Send + Sync,
+    N: Namespace + Send + Sync,
 {
     /// Entered subsegment.
     Entered {
@@ -21,18 +21,18 @@ where
         /// Subsegment.
         subsegment: Subsegment,
         /// Namespace.
-        namespace: T,
+        namespace: N,
     },
     /// Failed subsegment.
     Failed,
 }
 
-impl<C, T> SubsegmentSession<C, T>
+impl<C, N> SubsegmentSession<C, N>
 where
     C: Client,
-    T: Namespace + Send + Sync,
+    N: Namespace + Send + Sync,
 {
-    pub(crate) fn new(client: C, header: &Header, namespace: T, name_prefix: &str) -> Self {
+    pub(crate) fn new(client: C, header: &Header, namespace: N, name_prefix: &str) -> Self {
         let mut subsegment = Subsegment::begin(
             header.trace_id.clone(),
             header.parent_id.clone(),
@@ -63,7 +63,7 @@ where
     }
 
     /// Returns the namespace as a mutable reference.
-    pub fn namespace_mut(&mut self) -> Option<&mut T> {
+    pub fn namespace_mut(&mut self) -> Option<&mut N> {
         match self {
             Self::Entered { namespace, .. } => Some(namespace),
             Self::Failed => None,
@@ -71,10 +71,10 @@ where
     }
 }
 
-impl<C, T> Drop for SubsegmentSession<C, T>
+impl<C, N> Drop for SubsegmentSession<C, N>
 where
     C: Client,
-    T: Namespace + Send + Sync,
+    N: Namespace + Send + Sync,
 {
     fn drop(&mut self) {
         match self {

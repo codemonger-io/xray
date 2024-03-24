@@ -16,9 +16,9 @@ pub trait Context {
     ///
     /// [`SubsegmentSession`] records the end of the subsegment when it is
     /// dropped.
-    fn enter_subsegment<T>(&self, namespace: T) -> SubsegmentSession<Self::Client, T>
+    fn enter_subsegment<N>(&self, namespace: N) -> SubsegmentSession<Self::Client, N>
     where
-        T: Namespace + Send + Sync;
+        N: Namespace + Send + Sync;
 }
 
 /// Context as a subsegment of an existing segment.
@@ -66,9 +66,9 @@ where
 {
     type Client = C;
 
-    fn enter_subsegment<T>(&self, namespace: T) -> SubsegmentSession<Self::Client, T>
+    fn enter_subsegment<N>(&self, namespace: N) -> SubsegmentSession<Self::Client, N>
     where
-        T: Namespace + Send + Sync,
+        N: Namespace + Send + Sync,
     {
         SubsegmentSession::new(
             self.client.clone(),
@@ -109,9 +109,9 @@ where
 {
     type Client = T::Client;
 
-    fn enter_subsegment<U>(&self, namespace: U) -> SubsegmentSession<Self::Client, U>
+    fn enter_subsegment<N>(&self, namespace: N) -> SubsegmentSession<Self::Client, N>
     where
-        U: Namespace + Send + Sync,
+        N: Namespace + Send + Sync,
     {
         match self {
             Self::Op(context) => context.enter_subsegment(namespace),
