@@ -86,6 +86,7 @@ where
     operation: String,
     // session is unnecessarily wrapped in Mutex because `Intercept` is
     // immutable during its method calls.
+    #[allow(clippy::type_complexity)]
     session: Arc<Mutex<Option<SubsegmentSession<T::Client, AwsNamespace>>>>,
 }
 
