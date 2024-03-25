@@ -171,6 +171,7 @@
 <a href="#170" id="170">170</a>
 <a href="#171" id="171">171</a>
 <a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
 </pre></div><pre class="rust"><code><span class="attr">#![warn(missing_docs)]
 
 </span><span class="doccomment">//! Extension of `xray-lite` for [AWS SDK for Rust](https://aws.amazon.com/sdk-for-rust/).
@@ -187,11 +188,11 @@
 //! the S3 GetObject operation:
 //! ```no_run
 //! use aws_config::BehaviorVersion;
-//! use xray_lite::{Client, SubsegmentContext};
+//! use xray_lite::{DaemonClient, SubsegmentContext};
 //! use xray_lite_aws_sdk::ContextExt as _;
 //!
 //! async fn get_object_from_s3() {
-//!     let xray_client = Client::from_lambda_env().unwrap();
+//!     let xray_client = DaemonClient::from_lambda_env().unwrap();
 //!     let xray_context = SubsegmentContext::from_lambda_env(xray_client).unwrap();
 //!
 //!     let config = aws_config::load_defaults(BehaviorVersion::latest()).await;
@@ -259,7 +260,8 @@
     operation: String,
     <span class="comment">// session is unnecessarily wrapped in Mutex because `Intercept` is
     // immutable during its method calls.
-    </span>session: Arc&lt;Mutex&lt;<span class="prelude-ty">Option</span>&lt;SubsegmentSession&lt;AwsNamespace&gt;&gt;&gt;&gt;,
+    </span><span class="attr">#[allow(clippy::type_complexity)]
+    </span>session: Arc&lt;Mutex&lt;<span class="prelude-ty">Option</span>&lt;SubsegmentSession&lt;T::Client, AwsNamespace&gt;&gt;&gt;&gt;,
 }
 
 <span class="kw">impl</span>&lt;T&gt; XrayIntercept&lt;T&gt;

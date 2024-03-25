@@ -88,6 +88,13 @@
 <a href="#87" id="87">87</a>
 <a href="#88" id="88">88</a>
 <a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Subsegment session management.
 
 </span><span class="kw">use </span><span class="kw">crate</span>::client::Client;
@@ -97,30 +104,32 @@
 
 <span class="doccomment">/// Subsegment session.
 </span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub enum </span>SubsegmentSession&lt;T&gt;
+</span><span class="kw">pub enum </span>SubsegmentSession&lt;C, N&gt;
 <span class="kw">where
-    </span>T: Namespace + Send + Sync,
+    </span>C: Client,
+    N: Namespace + Send + Sync,
 {
     <span class="doccomment">/// Entered subsegment.
     </span>Entered {
         <span class="doccomment">/// X-Ray client.
-        </span>client: Client,
+        </span>client: C,
         <span class="doccomment">/// X-Amzn-Trace-Id header.
         </span>header: Header,
         <span class="doccomment">/// Subsegment.
         </span>subsegment: Subsegment,
         <span class="doccomment">/// Namespace.
-        </span>namespace: T,
+        </span>namespace: N,
     },
     <span class="doccomment">/// Failed subsegment.
     </span>Failed,
 }
 
-<span class="kw">impl</span>&lt;T&gt; SubsegmentSession&lt;T&gt;
+<span class="kw">impl</span>&lt;C, N&gt; SubsegmentSession&lt;C, N&gt;
 <span class="kw">where
-    </span>T: Namespace + Send + Sync,
+    </span>C: Client,
+    N: Namespace + Send + Sync,
 {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(client: Client, header: <span class="kw-2">&amp;</span>Header, namespace: T, name_prefix: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(client: C, header: <span class="kw-2">&amp;</span>Header, namespace: N, name_prefix: <span class="kw-2">&amp;</span>str) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>subsegment = Subsegment::begin(
             header.trace_id.clone(),
             header.parent_id.clone(),
@@ -138,6 +147,10 @@
         }
     }
 
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>failed() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::Failed
+    }
+
     <span class="doccomment">/// Returns the `x-amzn-trace-id` header value.
     </span><span class="kw">pub fn </span>x_amzn_trace_id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
         <span class="kw">match </span><span class="self">self </span>{
@@ -147,7 +160,7 @@
     }
 
     <span class="doccomment">/// Returns the namespace as a mutable reference.
-    </span><span class="kw">pub fn </span>namespace_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>T&gt; {
+    </span><span class="kw">pub fn </span>namespace_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>N&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Entered { namespace, .. } =&gt; <span class="prelude-val">Some</span>(namespace),
             <span class="self">Self</span>::Failed =&gt; <span class="prelude-val">None</span>,
@@ -155,9 +168,10 @@
     }
 }
 
-<span class="kw">impl</span>&lt;T&gt; Drop <span class="kw">for </span>SubsegmentSession&lt;T&gt;
+<span class="kw">impl</span>&lt;C, N&gt; Drop <span class="kw">for </span>SubsegmentSession&lt;C, N&gt;
 <span class="kw">where
-    </span>T: Namespace + Send + Sync,
+    </span>C: Client,
+    N: Namespace + Send + Sync,
 {
     <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="kw">match </span><span class="self">self </span>{
