@@ -70,6 +70,80 @@ impl Client for DaemonClient {
     }
 }
 
+/// Infallible client.
+#[derive(Clone, Debug)]
+pub enum InfallibleClient<C> {
+    /// Operational client.
+    Op(C),
+    /// Non-operational client.
+    Noop,
+}
+
+impl<C> InfallibleClient<C> {
+    /// Creates a new infallible client from a result of client creation.
+    pub fn new<E>(result: std::result::Result<C, E>) -> Self {
+        match result {
+            Ok(client) => Self::Op(client),
+            Err(_) => Self::Noop,
+        }
+    }
+}
+
+impl<C> Client for InfallibleClient<C>
+where
+    C: Client,
+{
+    fn send<S>(&self, data: &S) -> Result<()>
+    where
+        S: Serialize,
+    {
+        match self {
+            Self::Op(client) => client.send(data),
+            Self::Noop => Ok(()),
+        }
+    }
+}
+
+/// Conversion into an [`InfallibleClient`].
+///
+/// This is useful if you want to fall back to a "no-op" client if the creation
+/// of a client fails.
+///
+/// ```
+/// use xray_lite::{
+///     Context as _,
+///     CustomNamespace,
+///     DaemonClient,
+///     IntoInfallibleClient as _,
+///     SubsegmentContext,
+/// };
+///
+/// fn main() {
+///     let client = DaemonClient::from_lambda_env().into_infallible();
+///     # std::env::set_var("_X_AMZN_TRACE_ID", "Root=1-5759e988-bd862e3fe1be46a994272793;Parent=53995c3f42cd8ad8;Sampled=1");
+///     let context = SubsegmentContext::from_lambda_env(client).unwrap();
+///     let _session = context.enter_subsegment(CustomNamespace::new("readme.example"));
+/// }
+/// ```
+pub trait IntoInfallibleClient {
+    /// Client type.
+    type Client: Client;
+
+    /// Converts a value into an [`InfallibleClient`].
+    fn into_infallible(self) -> InfallibleClient<Self::Client>;
+}
+
+impl<C> IntoInfallibleClient for std::result::Result<C, Error>
+where
+    C: Client,
+{
+    type Client = C;
+
+    fn into_infallible(self) -> InfallibleClient<C> {
+        InfallibleClient::new(self)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

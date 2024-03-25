@@ -120,8 +120,8 @@ mod session;
 mod trace_id;
 
 pub use crate::{
-    client::{Client, DaemonClient},
-    context::{Context, IntoInfallibleContext, SubsegmentContext},
+    client::{Client, DaemonClient, InfallibleClient, IntoInfallibleClient},
+    context::{Context, InfallibleContext, IntoInfallibleContext, SubsegmentContext},
     epoch::Seconds,
     error::{Error, Result},
     header::Header,
