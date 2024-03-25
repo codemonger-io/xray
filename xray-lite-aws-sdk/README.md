@@ -8,8 +8,8 @@ Add the following to your `Cargo.toml` file:
 
 ```toml
 [dependencies]
-xray-lite = { git = "https://github.com/codemonger-io/xray-lite.git", tag = "aws-sdk-v0.0.2" }
-xray-lite-aws-sdk = { git = "https://github.com/codemonger-io/xray-lite.git", tag = "aws-sdk-v0.0.2" }
+xray-lite = { git = "https://github.com/codemonger-io/xray-lite.git", tag = "aws-sdk-v0.0.3" }
+xray-lite-aws-sdk = { git = "https://github.com/codemonger-io/xray-lite.git", tag = "aws-sdk-v0.0.3" }
 ```
 
 **You have to install `xray-lite` and `xray-lite-aws-sdk` from the same commit!**
