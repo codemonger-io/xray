@@ -118,12 +118,10 @@ where
 ///     SubsegmentContext,
 /// };
 ///
-/// fn main() {
-///     let client = DaemonClient::from_lambda_env().into_infallible();
-///     # std::env::set_var("_X_AMZN_TRACE_ID", "Root=1-5759e988-bd862e3fe1be46a994272793;Parent=53995c3f42cd8ad8;Sampled=1");
-///     let context = SubsegmentContext::from_lambda_env(client).unwrap();
-///     let _session = context.enter_subsegment(CustomNamespace::new("readme.example"));
-/// }
+/// let client = DaemonClient::from_lambda_env().into_infallible();
+/// # std::env::set_var("_X_AMZN_TRACE_ID", "Root=1-5759e988-bd862e3fe1be46a994272793;Parent=53995c3f42cd8ad8;Sampled=1");
+/// let context = SubsegmentContext::from_lambda_env(client).unwrap();
+/// let _session = context.enter_subsegment(CustomNamespace::new("readme.example"));
 /// ```
 pub trait IntoInfallibleClient {
     /// Client type.
