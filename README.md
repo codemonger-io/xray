@@ -20,15 +20,15 @@ xray-lite = { git = "https://github.com/codemonger-io/xray-lite.git", tag = "v0.
 Here is an example to record a subsegment of an AWS service operation within a Lambda function invocation instrumented with AWS X-Ray:
 
 ```rust
-use xray_lite::{AwsNamespace, Client, Context, SubsegmentContext};
+use xray_lite::{AwsNamespace, Context, DaemonClient, SubsegmentContext};
 
 fn main() {
-   // reads AWS_XRAY_DAEMON_ADDRESS
-   let client = Client::from_lambda_env().unwrap();
-   // reads _X_AMZN_TRACE_ID
-   let context = SubsegmentContext::from_lambda_env(client).unwrap();
+    // reads AWS_XRAY_DAEMON_ADDRESS
+    let client = DaemonClient::from_lambda_env().unwrap();
+    // reads _X_AMZN_TRACE_ID
+    let context = SubsegmentContext::from_lambda_env(client).unwrap();
 
-   do_s3_get_object(&context);
+    do_s3_get_object(&context);
 }
 
 fn do_s3_get_object(context: &impl Context) {
@@ -55,15 +55,15 @@ fn do_s3_get_object(context: &impl Context) {
 Here is an example to record a subsegment of a remote service call within a Lambda function invocation instrumented with AWS X-Ray:
 
 ```rust
-use xray_lite::{Client, Context, RemoteNamespace, SubsegmentContext};
+use xray_lite::{Context, DaemonClient, RemoteNamespace, SubsegmentContext};
 
 fn main() {
-   // reads AWS_XRAY_DAEMON_ADDRESS
-   let client = Client::from_lambda_env().unwrap();
-   // reads _X_AMZN_TRACE_ID
-   let context = SubsegmentContext::from_lambda_env(client).unwrap();
+    // reads AWS_XRAY_DAEMON_ADDRESS
+    let client = DaemonClient::from_lambda_env().unwrap();
+    // reads _X_AMZN_TRACE_ID
+    let context = SubsegmentContext::from_lambda_env(client).unwrap();
 
-   do_some_request(&context);
+    do_some_request(&context);
 }
 
 fn do_some_request(context: &impl Context) {
@@ -86,16 +86,16 @@ fn do_some_request(context: &impl Context) {
 Here is an example to record a custom subsegment within a Lambda function invocation instrumented with AWS X-Ray:
 
 ```rust
-use xray_lite::{Client, Context, CustomNamespace, SubsegmentContext};
+use xray_lite::{Context, DaemonClient, CustomNamespace, SubsegmentContext};
 
 fn main() {
-   // reads AWS_XRAY_DAEMON_ADDRESS
-   let client = Client::from_lambda_env().unwrap();
-   // reads _X_AMZN_TRACE_ID
-   let context = SubsegmentContext::from_lambda_env(client).unwrap()
-       .with_name_prefix("readme_example.");
+    // reads AWS_XRAY_DAEMON_ADDRESS
+    let client = DaemonClient::from_lambda_env().unwrap();
+    // reads _X_AMZN_TRACE_ID
+    let context = SubsegmentContext::from_lambda_env(client).unwrap()
+        .with_name_prefix("readme_example.");
 
-   do_something(&context);
+    do_something(&context);
 }
 
 fn do_something(context: &impl Context) {
@@ -105,6 +105,37 @@ fn do_something(context: &impl Context) {
     // do some thing ...
 
     // the subsegment will be ended and reported when it is dropped
+}
+```
+
+### Infallible client and context
+
+As X-Ray tracing is likely a subsidiary feature of your Lambda function, you may want to ignore any error that might occur during the initialization of the client and the context.
+By using the helper traits `IntoInfallibleClient` and `IntoInfallibleContext`, you can ignore such errors without affecting the rest of your code:
+
+```rust
+use xray_lite::{
+    AwsNamespace,
+    Context,
+    DaemonClient,
+    IntoInfallibleClient as _,
+    IntoInfallibleContext as _,
+    SubsegmentContext,
+};
+
+fn main() {
+    // Client creation error is ignored; e.g., AWS_XRAY_DAEMON_ADDRESS is not set
+    let client = DaemonClient::from_lambda_env().into_infallible();
+    // Context creation error is ignored; e.g., _X_AMZN_TRACE_ID is not set
+    let context = SubsegmentContext::from_lambda_env(client).into_infallible();
+
+    do_s3_get_object(&context);
+}
+
+fn do_s3_get_object(context: &impl Context) {
+    let subsegment = context.enter_subsegment(AwsNamespace::new("S3", "GetObject"));
+
+    // call S3 GetObject ...
 }
 ```
 
