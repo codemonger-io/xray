@@ -8,14 +8,14 @@ Add the following to your `Cargo.toml` file:
 
 ```toml
 [dependencies]
-xray-lite = { git = "https://github.com/codemonger-io/xray-lite.git", tag = "v0.0.8" }
+xray-lite = "0.0.9"
 ```
 
 ## Usage
 
 ### Subsegment of AWS service operation
 
-**The [`xray-lite-aws-sdk`](./xray-lite-aws-sdk) extension is recommended for tracing requests through [AWS SDK for Rust](https://aws.amazon.com/sdk-for-rust/).**
+**The [`xray-lite-aws-sdk`](./xray-lite-aws-sdk) extension is recommended for tracing operations through [AWS SDK for Rust](https://aws.amazon.com/sdk-for-rust/).**
 
 Here is an example to record a subsegment of an AWS service operation within a Lambda function invocation instrumented with AWS X-Ray:
 
@@ -145,8 +145,8 @@ fn do_s3_get_object(context: &impl Context) {
 
 ## API Documentation
 
-- [`xray-lite`](https://codemonger-io.github.io/xray-lite/api/xray_lite/)
-- [`xray-lite-aws-sdk`](https://codemonger-io.github.io/xray-lite/api/xray_lite_aws_sdk/)
+- [`xray-lite`](https://docs.rs/xray-lite)
+- [`xray-lite-aws-sdk`](https://docs.rs/xray-lite-aws-sdk)
 
 ## Acknowledgements
 
