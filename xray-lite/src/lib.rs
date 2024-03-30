@@ -6,6 +6,10 @@
 //!
 //! #### Subsegment of AWS service operation
 //!
+//! **The [`xray_lite_aws_sdk`](https://docs.rs/xray-lite-aws-sdk) extension is
+//! recommended for tracing operations through
+//! [AWS SDK for Rust](https://aws.amazon.com/sdk-for-rust/).**
+//!
 //! Here is an example to record a subsegment of an AWS service operation
 //! within a Lambda function invocation instrumented with AWS X-Ray:
 //!
@@ -105,6 +109,11 @@
 //!     // the subsegment will be ended and reported when it is dropped
 //! }
 //! ```
+//!
+//! ### Acknowledgements
+//!
+//! This crate is based on the [great work](https://github.com/softprops/xray)
+//! by [Doug Tangren (softprops)](https://github.com/softprops).
 
 mod client;
 mod context;
