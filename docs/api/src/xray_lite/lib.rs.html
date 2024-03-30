@@ -132,6 +132,15 @@
 <a href="#131" id="131">131</a>
 <a href="#132" id="132">132</a>
 <a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
 </pre></div><pre class="rust"><code><span class="attr">#![warn(missing_docs)]
 </span><span class="comment">//#![deny(warnings)]
 </span><span class="doccomment">//! Provides a client interface for [AWS X-Ray](https://aws.amazon.com/xray/)
@@ -139,6 +148,10 @@
 //! ### Examples
 //!
 //! #### Subsegment of AWS service operation
+//!
+//! **The [`xray_lite_aws_sdk`](https://docs.rs/xray-lite-aws-sdk) extension is
+//! recommended for tracing operations through
+//! [AWS SDK for Rust](https://aws.amazon.com/sdk-for-rust/).**
 //!
 //! Here is an example to record a subsegment of an AWS service operation
 //! within a Lambda function invocation instrumented with AWS X-Ray:
@@ -239,6 +252,11 @@
 //!     // the subsegment will be ended and reported when it is dropped
 //! }
 //! ```
+//!
+//! ### Acknowledgements
+//!
+//! This crate is based on the [great work](https://github.com/softprops/xray)
+//! by [Doug Tangren (softprops)](https://github.com/softprops).
 
 </span><span class="kw">mod </span>client;
 <span class="kw">mod </span>context;
