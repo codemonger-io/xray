@@ -1,15 +1,16 @@
 [package]
 name = "xray-lite-aws-sdk"
-version = "0.0.3"
+version = "0.0.4"
 atuthors = ["Kikuo Emoto <kemoto@codemonger.io>"]
 edition = "2021"
 description = "xray-lite extension for AWS SDK for Rust"
 license = "MIT"
-keywords = ["aws", "x-ray", "aws-sdk"]
-readme = "../README.md"
+keywords = ["aws", "x-ray", "aws-sdk", "tracing"]
+readme = "./README.md"
 documentation = "https://docs.rs/xray-lite-aws-sdk"
-homepage = "https://github.com/codemonger-io/xray-lite"
+homepage = "https://github.com/codemonger-io/xray-lite/tree/main/xray-lite-aws-sdk"
 repository = "https://github.com/codemonger-io/xray-lite"
+categories = ["development-tools::debugging", "development-tools::profiling"]
 
 [lib]
 name = "xray_lite_aws_sdk"
